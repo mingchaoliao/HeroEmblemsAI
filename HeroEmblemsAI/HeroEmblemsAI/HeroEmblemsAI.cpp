@@ -98,7 +98,8 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 	screensize.cy = rect.bottom - rect.top;
 	HBITMAP hBitmap = ::CreateCompatibleBitmap(hScreenDC, screensize.cx, screensize.cy);
 	HGDIOBJ hOldBMP = ::SelectObject(MemDC, hBitmap);
-	::BitBlt(MemDC, 0, 0, screensize.cx, screensize.cy, hScreenDC, rect.left, rect.top, SRCCOPY);
+	::BitBlt(MemDC, 0, 0, screensize.cx, screensize.cy, hScreenDC, 0, 0, SRCCOPY);
+	cout << rect.left << " " << rect.top << endl;
 	::SelectObject(MemDC, hOldBMP);
 	::DeleteObject(MemDC);
 	::ReleaseDC(hWnd, hScreenDC);
