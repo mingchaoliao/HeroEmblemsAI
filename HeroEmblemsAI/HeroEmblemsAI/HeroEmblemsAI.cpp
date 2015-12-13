@@ -16,7 +16,11 @@ CWinApp theApp;
 using namespace std;
 
 int main() {
-	
+	HWND hwnd;
+
+	hwnd = ::FindWindow(_T("Notepad++"), NULL);
+
+	if (hwnd) cout << "a" << endl;
 
 	return 0;
 }
