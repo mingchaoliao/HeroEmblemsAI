@@ -5,6 +5,7 @@
 #include "HeroEmblemsAI.h"
 #include "Winuser.h"
 #include <atlimage.h> 
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -93,6 +94,14 @@ void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	CloseHandle(hFile);
 }
 
+CImage cropImage(HBITMAP input, int x, int y, int w, int h) {
+	CImage source, dest;
+	source.Attach(input);
+	dest.Create(w, h, source.GetBPP());
+	source.BitBlt(dest.GetDC(), 0, 0, w, h, x, y, SRCCOPY);
+	return dest;
+}
+
 HBITMAP getScreenshotByHWND(HWND hWnd) {
 	
 	double dy = 0.5376;
@@ -125,22 +134,20 @@ int main() {
 	if (hWnd) cout << "a" << endl;
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
+	CImage tem;
+	tem.Attach(screenshot);
+	double width = tem.GetWidth();
+	double height = tem.GetHeight();
 
-	WriteBmpToFile(screenshot, _T("a.bmp"));
-	//save seperate parts here, to folder "pic"
-
-	
-	int width = 0, height = 0;
-	CImage source, piece;
-	source.Attach(screenshot); 
-	width = source.GetWidth();
-	height = source.GetHeight();
-	piece.Create(width/8, height/7, source.GetBPP());
-	source.BitBlt(piece.GetDC(), 0, 0, width/8, height/7, 0, 0, SRCCOPY);
-	//image1.Save(_T("c.bmp"));
-	WriteBmpToFile(piece,_T("b.bmp"));
-	piece.ReleaseDC();
-	piece.Destroy(); 
+	for (int row = 0; row < 7; row++) {
+		for (int col = 0; col < 8; col++) {
+			CImage piece = cropImage(screenshot, width / 8 * col, height / 7 * width, width / 8, height / 7);
+			string s = "out\\" + to_string(row) + to_string(col) + ".bmp";
+			WriteBmpToFile(piece, (LPCTSTR) s.c_str());
+			piece.ReleaseDC();
+			piece.Destroy();
+		}
+	}
 
 	return 0;
 }
