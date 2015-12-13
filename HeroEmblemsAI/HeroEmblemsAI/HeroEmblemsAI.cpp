@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "HeroEmblemsAI.h"
+#include "Winuser.h"
+#include <atlimage.h> 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -124,9 +126,21 @@ int main() {
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
 
+	WriteBmpToFile(screenshot, _T("a.bmp"));
 	//save seperate parts here, to folder "pic"
 
 	
+	int width = 0, height = 0;
+	CImage source, piece;
+	source.Attach(screenshot); 
+	width = source.GetWidth();
+	height = source.GetHeight();
+	piece.Create(width/8, height/7, source.GetBPP());
+	source.BitBlt(piece.GetDC(), 0, 0, width/8, height/7, 0, 0, SRCCOPY);
+	//image1.Save(_T("c.bmp"));
+	WriteBmpToFile(piece,_T("b.bmp"));
+	piece.ReleaseDC();
+	piece.Destroy(); 
 
 	return 0;
 }
