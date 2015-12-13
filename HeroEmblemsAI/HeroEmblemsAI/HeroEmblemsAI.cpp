@@ -91,6 +91,17 @@ void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	CloseHandle(hFile);
 }
 
+HBITMAP cropImage(HBITMAP input, double x, double y, double dx, double dy) {
+	HBITMAP output = ::CreateBitmap(dx, dy, 1, 24, NULL);
+	HDC inputDC = ::CreateCompatibleDC(NULL);
+	HDC outputDC = ::CreateCompatibleDC(NULL);
+	::SelectObject(inputDC, input);
+	::SelectObject(outputDC, output);
+	::BitBlt(outputDC, 0, 0, dx, dy, inputDC, x, y, SRCCOPY);
+	return output;
+}
+
+
 HBITMAP getScreenshotByHWND(HWND hWnd) {
 	
 	double dy = 0.5376;
@@ -118,13 +129,16 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 int main() {
 	HWND hWnd;
 
-	hWnd = ::FindWindow(_T("CHWindow"), NULL);
+	hWnd = ::FindWindow(_T("Notepad++"), NULL);
 
 	if (hWnd) cout << "a" << endl;
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
 
-	//save seperate parts here, to folder "pic"
+	HBITMAP test = cropImage(screenshot, 0, 0, 48, 48);
+
+	WriteBmpToFile(screenshot, _T("a.bmp"));
+	WriteBmpToFile(test, _T("b.bmp"));
 
 	
 
