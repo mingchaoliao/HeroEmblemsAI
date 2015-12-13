@@ -94,12 +94,32 @@ void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	CloseHandle(hFile);
 }
 
-CImage cropImage(HBITMAP input, int x, int y, int w, int h) {
-	CImage source, dest;
-	source.Attach(input);
-	dest.Create(w, h, source.GetBPP());
-	source.BitBlt(dest.GetDC(), 0, 0, w, h, x, y, SRCCOPY);
-	return dest;
+void cropImage(HBITMAP input) {
+	CImage tem;
+	tem.Attach(input);
+	double width = tem.GetWidth();
+	double height = tem.GetHeight();
+
+	for (int row = 0; row < 7; row++) {
+		for (int col = 0; col < 8; col++) {
+			CImage piece;
+
+
+
+			piece.Create(width / 8, height / 7, tem.GetBPP());
+			tem.BitBlt(piece.GetDC(), 0, 0, width / 8, height / 7, width / 8 * col, height / 7 * row, SRCCOPY);
+
+
+			string s = "out/" + to_string(row) + to_string(col) + ".bmp";
+			std::wstring stemp = std::wstring(s.begin(), s.end());
+			LPCWSTR sw = stemp.c_str();
+
+
+			WriteBmpToFile(piece, sw);
+			piece.ReleaseDC();
+			piece.Destroy();
+		}
+	}
 }
 
 HBITMAP getScreenshotByHWND(HWND hWnd) {
@@ -134,20 +154,8 @@ int main() {
 	if (hWnd) cout << "a" << endl;
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
-	CImage tem;
-	tem.Attach(screenshot);
-	double width = tem.GetWidth();
-	double height = tem.GetHeight();
-
-	for (int row = 0; row < 7; row++) {
-		for (int col = 0; col < 8; col++) {
-			CImage piece = cropImage(screenshot, width / 8 * col, height / 7 * width, width / 8, height / 7);
-			string s = "out\\" + to_string(row) + to_string(col) + ".bmp";
-			WriteBmpToFile(piece, (LPCTSTR) s.c_str());
-			piece.ReleaseDC();
-			piece.Destroy();
-		}
-	}
+	WriteBmpToFile(screenshot,_T("a.bmp"));
+	cropImage(screenshot);
 
 	return 0;
 }
