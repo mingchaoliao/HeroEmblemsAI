@@ -110,7 +110,7 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 int main() {
 	HWND hWnd;
 
-	hWnd = ::FindWindow(_T("Notepad++"), NULL);
+	hWnd = ::FindWindow(_T("CHWindow"), NULL);
 
 	if (hWnd) cout << "a" << endl;
 
