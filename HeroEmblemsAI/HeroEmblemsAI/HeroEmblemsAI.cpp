@@ -10,6 +10,9 @@
 
 using namespace std;
 
+const double WIDTH = 48.375;
+const double HEIGHT = 48.42857;
+
 void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	HDC hDC = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
 	int iBits = ::GetDeviceCaps(hDC, BITSPIXEL) * ::GetDeviceCaps(hDC, PLANES);//当前分辨率下每个像素所占字节数    
@@ -89,6 +92,10 @@ void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 }
 
 HBITMAP getScreenshotByHWND(HWND hWnd) {
+	
+	double dy = 0.5376;
+	double dx = 0.9724;
+
 	HDC hScreenDC = ::GetDC(hWnd);
 	HDC MemDC = ::CreateCompatibleDC(hScreenDC);
 	RECT rect;
@@ -96,9 +103,10 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 	SIZE screensize;
 	screensize.cx = rect.right - rect.left;
 	screensize.cy = rect.bottom - rect.top;
-	HBITMAP hBitmap = ::CreateCompatibleBitmap(hScreenDC, screensize.cx, screensize.cy);
+	HBITMAP hBitmap = ::CreateCompatibleBitmap(hScreenDC, screensize.cx*dx*0.9773, screensize.cy*dy*0.83498);
 	HGDIOBJ hOldBMP = ::SelectObject(MemDC, hBitmap);
-	::BitBlt(MemDC, 0, 0, screensize.cx, screensize.cy, hScreenDC, 0, 0, SRCCOPY);
+
+	::BitBlt(MemDC, 0, 0, screensize.cx*dx, screensize.cy*(1-dy), hScreenDC, screensize.cx*(1-dx), screensize.cy*dy, SRCCOPY);
 	cout << rect.left << " " << rect.top << endl;
 	::SelectObject(MemDC, hOldBMP);
 	::DeleteObject(MemDC);
@@ -116,7 +124,9 @@ int main() {
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
 
-	WriteBmpToFile(screenshot, _T("a.bmp"));
+	//save seperate parts here, to folder "pic"
+
+	
 
 	return 0;
 }
