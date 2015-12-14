@@ -20,6 +20,8 @@ using namespace cv;
 const int ROW = 7;
 const int COL = 8;
 
+Mat J,X,D,A;
+
 struct Point {
 	int x = 0;
 	int y = 0;
@@ -27,17 +29,74 @@ struct Point {
 };
 
 
-int map[7][8] = {
-	{ 1,2,3,4,1,2,3,4 },
-	{ 4,3,2,1,4,3,2,1 },
-	{ 1,2,3,4,1,2,3,4 },
-	{ 4,3,2,1,4,3,2,1 },
-	{ 1,2,3,4,1,2,3,4 },
-	{ 4,3,2,1,4,3,2,1 },
-	{ 1,2,3,4,1,2,3,4 }
-};
+int map[7][8];
+Mat CImageToMat(CImage& cimage)
+{
+	Mat mat;
+
+	int nChannels = cimage.GetBPP() / 8;
+
+	int nWidth = cimage.GetWidth();
+	int nHeight = cimage.GetHeight();
 
 
+	//重建mat  
+	if (1 == nChannels)
+	{
+		mat.create(nHeight, nWidth, CV_8UC1);
+	}
+	else if (3 == nChannels)
+	{
+		mat.create(nHeight, nWidth, CV_8UC3);
+	}
+	else if (4 == nChannels)
+	{
+		mat.create(nHeight, nWidth, CV_8UC4);
+	}
+
+
+	//拷贝数据  
+
+
+	uchar* pucRow;                                  //指向数据区的行指针  
+	uchar* pucImage = (uchar*)cimage.GetBits();     //指向数据区的指针  
+	int nStep = cimage.GetPitch();                  //每行的字节数,注意这个返回值有正有负  
+
+
+	for (int nRow = 0; nRow < nHeight; nRow++)
+	{
+		pucRow = (mat.ptr<uchar>(nRow));
+		for (int nCol = 0; nCol < nWidth; nCol++)
+		{
+			if (1 == nChannels)
+			{
+				pucRow[nCol] = *(pucImage + nRow * nStep + nCol);
+			}
+			else if (3 == nChannels)
+			{
+				for (int nCha = 0; nCha < 3; nCha++)
+				{
+					pucRow[nCol * 3 + nCha] = *(pucImage + nRow * nStep + nCol * 3 + nCha);
+				}
+			}
+		}
+	}
+
+	return mat;
+}
+double getSimilarity(const Mat A, const Mat B) {
+	if (A.rows > 0 && A.rows == B.rows && A.cols > 0 && A.cols == B.cols) {
+		// Calculate the L2 relative error between images.
+		double errorL2 = norm(A, B, CV_L2);
+		// Convert to a reasonable scale, since L2 error is summed across all pixels of the image.
+		double similarity = errorL2 / (double)(A.rows * A.cols);
+		return similarity;
+	}
+	else {
+		//Images have a different size
+		return 100000000.0;  // Return a bad value
+	}
+}
 void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	HDC hDC = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
 	int iBits = ::GetDeviceCaps(hDC, BITSPIXEL) * ::GetDeviceCaps(hDC, PLANES);//当前分辨率下每个像素所占字节数    
@@ -131,6 +190,22 @@ void cropImage(HBITMAP input) {
 			piece.Create(width / 8, height / 7, tem.GetBPP());
 			tem.BitBlt(piece.GetDC(), 0, 0, width / 8, height / 7, width / 8 * col, height / 7 * row, SRCCOPY);
 
+			double j = getSimilarity(J, CImageToMat(piece));
+			double x = getSimilarity(X, CImageToMat(piece));
+			double d = getSimilarity(D, CImageToMat(piece));
+			double a = getSimilarity(A, CImageToMat(piece));
+
+			if (j < 1.5) {
+				map[row][col] = 1;
+			} else if (x < 1.5) {
+				map[row][col] = 2;
+			} else if(d < 1.5) {
+				map[row][col] = 3;
+			} else if (a < 1.5) {
+				map[row][col] = 4;
+			} else {
+				map[row][col] = 0;
+			}
 
 			string s = "out/" + to_string(row) + to_string(col) + ".bmp";
 			std::wstring stemp = std::wstring(s.begin(), s.end());
@@ -177,7 +252,7 @@ void printMap() {
 }
 
 int evalue() {
-	printMap();
+	//printMap();
 	for (int r = 0; r < ROW; r++) {
 		int count = 0;
 		int role = -1;
@@ -245,21 +320,13 @@ void searchAll() {
 	}
 }
 
-double getSimilarity(const Mat A, const Mat B) {
-	if (A.rows > 0 && A.rows == B.rows && A.cols > 0 && A.cols == B.cols) {
-		// Calculate the L2 relative error between images.
-		double errorL2 = norm(A, B, CV_L2);
-		// Convert to a reasonable scale, since L2 error is summed across all pixels of the image.
-		double similarity = errorL2 / (double)(A.rows * A.cols);
-		return similarity;
-	}
-	else {
-		//Images have a different size
-		return 100000000.0;  // Return a bad value
-	}
-}
+
 
 int main() {
+	J = imread("J.bmp");
+	X = imread("X.bmp");
+	D = imread("D.bmp");
+	A = imread("A.bmp");
 	/*
 	Mat img = imread("C:/Users/Mingchao/Pictures/1.jpg");
 	namedWindow("a");
@@ -272,9 +339,9 @@ int main() {
 
 	if (hWnd) cout << "a" << endl;
 
-	//HBITMAP screenshot = getScreenshotByHWND(hWnd);
-	//WriteBmpToFile(screenshot,_T("a.bmp"));
-	//cropImage(screenshot);
+	HBITMAP screenshot = getScreenshotByHWND(hWnd);
+	WriteBmpToFile(screenshot,_T("a.bmp"));
+	cropImage(screenshot);
 
 	printMap();
 	cout << endl;
