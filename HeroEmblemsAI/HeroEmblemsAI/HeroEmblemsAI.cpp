@@ -159,6 +159,15 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 	return hBitmap;
 }
 
+void printMap() {
+	for(int r = 0; r < ROW; r++) {
+		for (int c = 1; c < COL; c++) {
+			cout << map[r][c];
+		}
+		cout << endl;
+	}
+}
+
 int evalue() {
 	for (int r = 0; r < ROW; r++) {
 		int count = 1;
@@ -166,7 +175,10 @@ int evalue() {
 		for (int c = 1; c < COL; c++) {
 			if (map[r][c] == role) {
 				count++;
-				if (count == 3) return 1;
+				if (count == 3) {
+					printMap();
+					return 1;
+				}
 			}
 			else {
 				count = 1;
@@ -180,7 +192,10 @@ int evalue() {
 		for (int r = 1; r < ROW; r++) {
 			if (map[r][c] == role) {
 				count++;
-				if (count == 3) return 1;
+				if (count == 3) {
+					printMap();
+					return 1;
+				}
 			}
 			else {
 				count = 1;
@@ -222,11 +237,12 @@ void searchAll() {
 
 
 int main() {
+	/*
 	Mat img = imread("C:/Users/Mingchao/Pictures/1.jpg");
 	namedWindow("a");
 	imshow("b", img);
 	waitKey(6000);
-
+	*/
 	HWND hWnd;
 
 	hWnd = ::FindWindow(_T("CHWindow"), NULL);
@@ -238,13 +254,13 @@ int main() {
 	//cropImage(screenshot);
 
 	for (int r = 0; r < ROW; r++) {
-		for (int c = 1; c < COL; c++) {
-			int tem = rand() % 4 + 1;
-			map[r][c] = tem;
-			cout << tem << " ";
+		for (int c = 0; c < COL; c++) {
+			map[r][c] = rand() % 4 + 1;
 		}
-		cout << endl;
 	}
+	printMap();
+	cout << endl;
+	searchAll();
 
 	return 0;
 }
