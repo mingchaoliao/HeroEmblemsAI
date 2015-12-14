@@ -7,12 +7,15 @@
 #include <atlimage.h> 
 #include <string>
 #include "search.h"
+#include <opencv2/core/core.hpp> 
+#include <opencv2/highgui/highgui.hpp> 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 using namespace std;
+using namespace cv;
 
 const int ROW = 7;
 const int COL = 8;
@@ -219,6 +222,11 @@ void searchAll() {
 
 
 int main() {
+	Mat img = imread("C:/Users/Mingchao/Pictures/1.jpg");
+	namedWindow("a");
+	imshow("b", img);
+	waitKey(6000);
+
 	HWND hWnd;
 
 	hWnd = ::FindWindow(_T("CHWindow"), NULL);
