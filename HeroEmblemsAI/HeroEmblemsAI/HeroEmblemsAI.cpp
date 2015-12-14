@@ -27,7 +27,15 @@ struct Point {
 };
 
 
-int map[ROW][COL];
+int map[7][8] = {
+	{ 1,2,3,4,1,2,3,4 },
+	{ 4,3,2,1,4,3,2,1 },
+	{ 1,2,3,4,1,2,3,4 },
+	{ 4,3,2,1,4,3,2,1 },
+	{ 1,2,3,4,1,2,3,4 },
+	{ 4,3,2,1,4,3,2,1 },
+	{ 1,2,3,4,1,2,3,4 }
+};
 
 
 void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
@@ -161,7 +169,7 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 
 void printMap() {
 	for(int r = 0; r < ROW; r++) {
-		for (int c = 1; c < COL; c++) {
+		for (int c = 0; c < COL; c++) {
 			cout << map[r][c];
 		}
 		cout << endl;
@@ -169,14 +177,15 @@ void printMap() {
 }
 
 int evalue() {
+	printMap();
 	for (int r = 0; r < ROW; r++) {
-		int count = 1;
-		int role = map[r][0];
-		for (int c = 1; c < COL; c++) {
+		int count = 0;
+		int role = -1;
+		for (int c = 0; c < COL; c++) {
 			if (map[r][c] == role) {
 				count++;
 				if (count == 3) {
-					printMap();
+					cout << "Yes" << endl;
 					return 1;
 				}
 			}
@@ -187,13 +196,13 @@ int evalue() {
 		}
 	}
 	for (int c = 0; c < COL; c++) {
-		int count = 1;
-		int role = map[0][c];
-		for (int r = 1; r < ROW; r++) {
+		int count = 0;
+		int role = -1;
+		for (int r = 0; r < ROW; r++) {
 			if (map[r][c] == role) {
 				count++;
 				if (count == 3) {
-					printMap();
+					cout << "Yes" << endl;
 					return 1;
 				}
 			}
@@ -203,6 +212,7 @@ int evalue() {
 			}
 		}
 	}
+	cout << "No" << endl;
 	return 0;
 }
 
@@ -223,18 +233,31 @@ int search(int x1, int y1, int x2, int y2) {
 void searchAll() {
 	for (int x = 0; x < COL; x++) {
 		for (int y = 0; y < ROW; y++) {
-			if (search(x, y, x, y + 1) > 0) { //swap right;
-				cout << x << "," << y << "right" << endl;
+			if (search(x, y, x, y + 1) > 0) { //swap down;
+				cout << x << "," << y << "down" << endl;
 				return;
 			}
-			if (search(x, y, x + 1, y) > 0) { //swap down;
-				cout << x << "," << y << "down" << endl;
+			if (search(x, y, x + 1, y) > 0) { //swap right;
+				cout << x << "," << y << "right" << endl;
 				return;
 			}
 		}
 	}
 }
 
+double getSimilarity(const Mat A, const Mat B) {
+	if (A.rows > 0 && A.rows == B.rows && A.cols > 0 && A.cols == B.cols) {
+		// Calculate the L2 relative error between images.
+		double errorL2 = norm(A, B, CV_L2);
+		// Convert to a reasonable scale, since L2 error is summed across all pixels of the image.
+		double similarity = errorL2 / (double)(A.rows * A.cols);
+		return similarity;
+	}
+	else {
+		//Images have a different size
+		return 100000000.0;  // Return a bad value
+	}
+}
 
 int main() {
 	/*
@@ -253,11 +276,6 @@ int main() {
 	//WriteBmpToFile(screenshot,_T("a.bmp"));
 	//cropImage(screenshot);
 
-	for (int r = 0; r < ROW; r++) {
-		for (int c = 0; c < COL; c++) {
-			map[r][c] = rand() % 4 + 1;
-		}
-	}
 	printMap();
 	cout << endl;
 	searchAll();
