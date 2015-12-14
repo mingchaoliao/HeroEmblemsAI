@@ -6,6 +6,7 @@
 #include "Winuser.h"
 #include <atlimage.h> 
 #include <string>
+#include "search.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,6 +16,17 @@ using namespace std;
 
 const double WIDTH = 48.375;
 const double HEIGHT = 48.42857;
+
+struct Point {
+	int x = 0;
+	int y = 0;
+	int role = 0;
+};
+
+//0->unknown, 1->½£, 2->ÐÇÐÇ, 3->¶Ü, 4->°®ÐÄ
+Point map[7][8];
+const int R = 7;
+const int C = 8;
 
 void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	HDC hDC = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
@@ -145,6 +157,19 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 	return hBitmap;
 }
 
+int check(Point a, Point b) {
+	
+}
+
+pair<Point, Point> search() {
+	int score[R][C][2];
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			
+		}
+	}
+}
+
 
 int main() {
 	HWND hWnd;
@@ -153,11 +178,12 @@ int main() {
 
 	if (hWnd) cout << "a" << endl;
 
-	HBITMAP screenshot = getScreenshotByHWND(hWnd);
-	WriteBmpToFile(screenshot,_T("a.bmp"));
-	cropImage(screenshot);
+	//HBITMAP screenshot = getScreenshotByHWND(hWnd);
+	//WriteBmpToFile(screenshot,_T("a.bmp"));
+	//cropImage(screenshot);
 
 	
 
+	search();
 	return 0;
 }
