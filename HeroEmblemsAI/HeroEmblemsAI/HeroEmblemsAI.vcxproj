@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(OPENCV_DIR)\build\include;$(OPENCV_DIR)\build\include\opencv;$(OPENCV_DIR)\build\include\opencv2;$(IncludePath)</IncludePath>
+    <IncludePath>$(OPENCV_DIR)\build\include;$(OPENCV_DIR)\build\include\opencv2;$(OPENCV_DIR)\build\include\opencv;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENCV_DIR)\build\x64\vc12\staticlib;$(OPENCV_DIR)\build\x64\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(OPENCV_DIR)\build\include;$(OPENCV_DIR)\build\include\opencv;$(OPENCV_DIR)\build\include\opencv2;$(IncludePath)</IncludePath>
+    <IncludePath>$(OPENCV_DIR)\build\include;$(OPENCV_DIR)\build\include\opencv2;$(OPENCV_DIR)\build\include\opencv;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENCV_DIR)\build\x64\vc12\staticlib;$(OPENCV_DIR)\build\x64\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc12\staticlib;$(OPENCV_DIR)\build\x64\vc12\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_ts300.lib;opencv_world300.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -147,7 +147,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc12\staticlib;$(OPENCV_DIR)\build\x64\vc12\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_ts300.lib;opencv_world300.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
