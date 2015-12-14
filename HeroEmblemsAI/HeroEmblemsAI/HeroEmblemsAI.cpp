@@ -14,19 +14,18 @@
 
 using namespace std;
 
-const double WIDTH = 48.375;
-const double HEIGHT = 48.42857;
+const int ROW = 7;
+const int COL = 8;
 
 struct Point {
 	int x = 0;
 	int y = 0;
-	int role = 0;
+	int role = 0; //0->unknown, 1->½£, 2->ÐÇÐÇ, 3->¶Ü, 4->°®ÐÄ
 };
 
-//0->unknown, 1->½£, 2->ÐÇÐÇ, 3->¶Ü, 4->°®ÐÄ
-Point map[7][8];
-const int R = 7;
-const int C = 8;
+
+int map[ROW][COL];
+
 
 void WriteBmpToFile(HBITMAP hBitmap, LPCTSTR path) {
 	HDC hDC = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
@@ -157,15 +156,63 @@ HBITMAP getScreenshotByHWND(HWND hWnd) {
 	return hBitmap;
 }
 
-int check(Point a, Point b) {
-	
+int evalue() {
+	for (int r = 0; r < ROW; r++) {
+		int count = 1;
+		int role = map[r][0];
+		for (int c = 1; c < COL; c++) {
+			if (map[r][c] == role) {
+				count++;
+				if (count == 3) return 1;
+			}
+			else {
+				count = 1;
+				role = map[r][c];
+			}
+		}
+	}
+	for (int c = 0; c < COL; c++) {
+		int count = 1;
+		int role = map[0][c];
+		for (int r = 1; r < ROW; r++) {
+			if (map[r][c] == role) {
+				count++;
+				if (count == 3) return 1;
+			}
+			else {
+				count = 1;
+				role = map[r][c];
+			}
+		}
+	}
+	return 0;
 }
 
-pair<Point, Point> search() {
-	int score[R][C][2];
-	for (int i = 0; i < R; i++) {
-		for (int j = 0; j < C; j++) {
-			
+int search(int x1, int y1, int x2, int y2) {
+	if (x1 < COL && y1 < ROW && x2 < COL && y2 < ROW) {
+		int tem1 = map[y1][x1];
+		int tem2 = map[y2][x2];
+		map[y1][x1] = tem2;
+		map[y2][x2] = tem1;
+		int rtn = evalue();
+		map[y1][x1] = tem1;
+		map[y2][x2] = tem2;
+		return rtn;
+	}
+	else return 0; //point out of bound
+}
+
+void searchAll() {
+	for (int x = 0; x < COL; x++) {
+		for (int y = 0; y < ROW; y++) {
+			if (search(x, y, x, y + 1) > 0) { //swap right;
+				cout << x << "," << y << "right" << endl;
+				return;
+			}
+			if (search(x, y, x + 1, y) > 0) { //swap down;
+				cout << x << "," << y << "down" << endl;
+				return;
+			}
 		}
 	}
 }
@@ -182,8 +229,14 @@ int main() {
 	//WriteBmpToFile(screenshot,_T("a.bmp"));
 	//cropImage(screenshot);
 
-	
+	for (int r = 0; r < ROW; r++) {
+		for (int c = 1; c < COL; c++) {
+			int tem = rand() % 4 + 1;
+			map[r][c] = tem;
+			cout << tem << " ";
+		}
+		cout << endl;
+	}
 
-	search();
 	return 0;
 }
