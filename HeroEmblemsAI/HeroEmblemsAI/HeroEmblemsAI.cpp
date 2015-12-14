@@ -157,5 +157,7 @@ int main() {
 	WriteBmpToFile(screenshot,_T("a.bmp"));
 	cropImage(screenshot);
 
+	
+
 	return 0;
 }
