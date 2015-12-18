@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "HeroEmblemsAI.h"
-#include "Winuser.h"
+#include <Winuser.h>
 #include <atlimage.h> 
 #include <string>
 #include "search.h"
@@ -81,7 +81,7 @@ Mat CImageToMat(CImage& cimage)
 			}
 		}
 	}
-
+	
 	return mat;
 }
 double getSimilarity(const Mat A, const Mat B) {
@@ -190,10 +190,13 @@ void cropImage(HBITMAP input) {
 			piece.Create(width / 8, height / 7, tem.GetBPP());
 			tem.BitBlt(piece.GetDC(), 0, 0, width / 8, height / 7, width / 8 * col, height / 7 * row, SRCCOPY);
 
-			double j = getSimilarity(J, CImageToMat(piece));
-			double x = getSimilarity(X, CImageToMat(piece));
-			double d = getSimilarity(D, CImageToMat(piece));
-			double a = getSimilarity(A, CImageToMat(piece));
+			WriteBmpToFile(piece,_T("tem.bmp"));
+			Mat piece_mat = imread("tem.bmp");
+
+			double j = getSimilarity(J, piece_mat);
+			double x = getSimilarity(X, piece_mat);
+			double d = getSimilarity(D, piece_mat);
+			double a = getSimilarity(A, piece_mat);
 
 			if (j < 1.5) {
 				map[row][col] = 1;
@@ -327,6 +330,7 @@ int main() {
 	X = imread("X.bmp");
 	D = imread("D.bmp");
 	A = imread("A.bmp");
+	
 	/*
 	Mat img = imread("C:/Users/Mingchao/Pictures/1.jpg");
 	namedWindow("a");
@@ -336,16 +340,22 @@ int main() {
 	HWND hWnd;
 
 	hWnd = ::FindWindow(_T("CHWindow"), NULL);
-
-	if (hWnd) cout << "a" << endl;
+	//hWnd = ::FindWindow(_T("CHWindow"),_T("AIRPLAYER"));
 
 	HBITMAP screenshot = getScreenshotByHWND(hWnd);
-	WriteBmpToFile(screenshot,_T("a.bmp"));
+	WriteBmpToFile(screenshot, _T("bbc.bmp"));
 	cropImage(screenshot);
 
 	printMap();
 	cout << endl;
 	searchAll();
+	HWND edit = (HWND)0x00020A10;
+	
+	
+	int a1 =  PostMessage(edit, WM_LBUTTONDOWN, 0, MAKELPARAM(200, 200));
+	int a2 = PostMessage(edit, WM_MOUSEMOVE, 0, MAKELPARAM(300, 300));
 
+	int a3 = PostMessage(edit, WM_LBUTTONUP, 0, MAKELPARAM(300, 300));
+	cout << a1 << " " << a2 << " " << a3 << endl;
 	return 0;
 }
